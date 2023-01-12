@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using WebApplication1.DAL;
+
 namespace WebApplication1
 {
     public class Program
@@ -6,9 +9,17 @@ namespace WebApplication1
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
+            builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<AppDbContext>(otp =>
+            {
+                otp.UseSqlServer(builder.Configuration.GetConnectionString("MSSQL"));
+            });
             var app = builder.Build();
             app.UseRouting();
             app.UseStaticFiles();
+            
+            app.MapControllerRoute(name: "areas",pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
             app.MapControllerRoute(name:"default",pattern:"{controller=Home}/{action=Index}/{id?}");
             app.MapControllerRoute(name: "Login_Register",pattern: "Login_Register",defaults:new {Controller="Home",Action= "Login_Register" });
             app.MapControllerRoute(name: "Cart", pattern: "Cart", defaults: new { Controller = "Home", Action = "Cart" });
